@@ -15,9 +15,6 @@
   --danger:#ff6b6b;
   --bar:rgba(255,255,255,.18);
   --bg:#000;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:"Zen Kaku Gothic New","Noto Sans SC","Noto Sans KR","PingFang SC","Malgun Gothic",system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none}
@@ -27,8 +24,8 @@ canvas:active{cursor:grabbing}
 
 /* Top-left HUD panel */
 .panel{
-  position:absolute;top:14px;left:14px;width:264px;max-width:calc(100% - 28px);
-  max-height:calc(100% - 28px);overflow:auto;
+  position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:calc(14px + env(safe-area-inset-left,0px));width:264px;max-width:calc(100% - 28px);
+  max-height:calc(100% - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;
   background:var(--hud);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 14px;font-size:14px;z-index:3
 }
@@ -68,8 +65,8 @@ h1{font-size:16px;font-weight:500;margin:0 0 8px;letter-spacing:.02em}
 
 /* Top-center Compass */
 #compass{
-  position:absolute;top:14px;left:50%;transform:translateX(-50%);
-  width:min(320px,calc(100% - 360px));min-width:180px;height:30px;
+  position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);
+  width:min(320px,calc(100% - 620px));min-width:170px;height:30px;
   background:var(--hud);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   border:1px solid rgba(255,255,255,.12);border-radius:999px;overflow:hidden;
   pointer-events:none;z-index:2
@@ -77,20 +74,29 @@ h1{font-size:16px;font-weight:500;margin:0 0 8px;letter-spacing:.02em}
 #compass.hidden{display:none}
 #compassTrack{position:relative;width:100%;height:100%}
 .c-tick{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:11px;color:rgba(238,240,255,.6);font-weight:500}
-.c-mark{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:3px;font-size:10px;color:var(--fg);white-space:nowrap}
-.c-dot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 6px currentColor}
+.c-mark{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:2px;font-size:10px;color:var(--fg);white-space:nowrap}
+.c-ico{font-size:11px;line-height:1}
+.c-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 6px currentColor}
 #compassCenter{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(242,184,102,.7);transform:translateX(-.5px)}
 
 /* Top-right controls */
-#langs{position:absolute;top:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 290px);z-index:3}
+#langs{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 290px);z-index:3}
 #langs button{
   font:inherit;font-size:13px;color:var(--fg);background:var(--hud);
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 11px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 10px;cursor:pointer;
   transition:background .18s,color .18s
 }
 #langs button:hover{background:var(--hud-hi)}
 #langs button[aria-pressed="true"]{background:var(--fg);color:#14162a;border-color:var(--fg)}
+.lang-wrap{position:relative}
+#langMenu{
+  position:absolute;top:calc(100% + 6px);right:0;display:none;flex-direction:column;gap:4px;
+  background:rgba(16,19,36,.96);border:1px solid rgba(255,255,255,.18);border-radius:12px;
+  padding:6px;min-width:110px;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:10
+}
+#langMenu.on{display:flex}
+#langMenu button{width:100%;text-align:left;border-radius:8px;padding:5px 10px}
 button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 
 /* Toasts, prompts, progress */
@@ -137,8 +143,10 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .pb button,#shot button{font:inherit;color:#14162a;background:var(--fg);border:0;border-radius:999px;padding:8px 18px;cursor:pointer}
 
 #shot{flex-direction:column;gap:12px}
-#shot img{max-width:92%;max-height:74%;border-radius:12px;border:1px solid rgba(255,255,255,.2)}
-#shot div{color:var(--mut);font-size:13px}
+#shot img{max-width:92%;max-height:72%;border-radius:12px;border:1px solid rgba(255,255,255,.2)}
+#shot .shot-note{color:var(--mut);font-size:13px}
+.shot-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shot button.sec{background:transparent;color:var(--fg);border:1px solid rgba(255,255,255,.35)}
 
 /* Photo mode HUD */
 #pho{
@@ -158,7 +166,7 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 #touchUI{position:absolute;inset:0;pointer-events:none;display:none;z-index:4}
 #touchUI.on{display:block}
 #joyBase{
-  position:absolute;left:22px;bottom:52px;width:116px;height:116px;border-radius:50%;
+  position:absolute;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));width:116px;height:116px;border-radius:50%;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.26);
   pointer-events:auto;touch-action:none
 }
@@ -168,7 +176,7 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
   pointer-events:none
 }
 #touchBtns{
-  position:absolute;right:18px;bottom:52px;display:grid;grid-template-columns:repeat(2,58px);gap:10px;
+  position:absolute;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(2,58px);gap:10px;
   pointer-events:auto
 }
 #touchBtns button{
@@ -177,11 +185,14 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
   touch-action:manipulation
 }
+#touchBtns button.hidden{display:none}
 #touchBtns button:active{background:var(--fg);color:#14162a}
 
+@media (max-width:860px){
+  #compass{display:none}
+}
 @media (max-width:720px){
   .panel{width:215px;padding:10px 12px}
-  #compass{display:none}
   #langs{max-width:calc(100% - 235px)}
 }
 </style>
@@ -251,8 +262,11 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
   <!-- Screenshot Modal -->
   <div id="shot">
     <img id="shotImg" alt="Moon Base Photo">
-    <div data-i="shotHint"></div>
-    <button id="shotX" type="button" data-i="close"></button>
+    <div class="shot-note" data-i="shotHint"></div>
+    <div class="shot-acts">
+      <button id="shotDl" type="button" data-i="dl"></button>
+      <button id="shotX" type="button" class="sec" data-i="close"></button>
+    </div>
   </div>
 
   <!-- Virtual Touch Controls -->
@@ -260,9 +274,11 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
     <div id="joyBase"><div id="joyKnob"></div></div>
     <div id="touchBtns">
       <button id="tAct" type="button"><span>E</span><small data-i="tUse"></small></button>
-      <button id="tJump" type="button"><span>▲</span><small data-i="tJump"></small></button>
+      <button id="tJump" type="button"><span>▲</span><small id="tJumpLbl" data-i="tJump"></small></button>
+      <button id="tShift" type="button"><span>⚡</span><small id="tShiftLbl" data-i="tHop"></small></button>
       <button id="tEat" type="button"><span>🥔</span><small data-i="tEat"></small></button>
       <button id="tLamp" type="button"><span>🔦</span><small data-i="tLamp"></small></button>
+      <button id="tRet" type="button" class="hidden"><span>R</span><small data-i="tRet"></small></button>
     </div>
   </div>
 </div>
@@ -356,7 +372,10 @@ const T = {
     taskLbl:"Tasks", taskShow:"Show", taskHide:"Hide",
     invPot:"Potatoes", invIce:"Ice samples", invPart:"Spare parts", invCrop:"Greenhouse crop & moisture",
     cropDry:"Dry · Paused", cropNoPw:"Low power · Paused",
-    tUse:"Use", tJump:"Jump", tEat:"Eat", tLamp:"Lamp"
+    tUse:"Use", tJump:"Jump", tHop:"Hop", tUp:"Up", tDown:"Down", tEat:"Eat", tLamp:"Lamp", tRet:"Return",
+    dl:"Download PNG",
+    tipLang:"Language", tipMode:"Difficulty mode", tipLamp:"Headlamp (L)", tipMute:"Sound (M)",
+    tipQual:"Graphics quality", tipTouch:"Touch controls", tipPause:"Pause (Esc)", tipPhoto:"Photo mode (P)"
   },
   ja:{
     title:"静かな月面基地", o2:"酸素", pw:"電力", wt:"水", hg:"空腹",
@@ -391,7 +410,10 @@ const T = {
     taskLbl:"タスク", taskShow:"表示", taskHide:"非表示",
     invPot:"じゃがいも", invIce:"氷サンプル", invPart:"予備パーツ", invCrop:"温室の作物と水分",
     cropDry:"水不足・停止中", cropNoPw:"電力不足・停止中",
-    tUse:"操作", tJump:"跳躍", tEat:"食事", tLamp:"ライト"
+    tUse:"操作", tJump:"跳躍", tHop:"ホップ", tUp:"上昇", tDown:"下降", tEat:"食事", tLamp:"ライト", tRet:"帰還",
+    dl:"画像を保存",
+    tipLang:"言語", tipMode:"難易度モード", tipLamp:"ヘッドライト (L)", tipMute:"音声切替 (M)",
+    tipQual:"画質設定", tipTouch:"タッチ操作", tipPause:"一時停止 (Esc)", tipPhoto:"写真モード (P)"
   },
   ko:{
     title:"고요한 달 기지", o2:"산소", pw:"전력", wt:"물", hg:"배고픔",
@@ -426,7 +448,10 @@ const T = {
     taskLbl:"작업", taskShow:"보기", taskHide:"숨기기",
     invPot:"감자", invIce:"얼음 샘플", invPart:"예비 부품", invCrop:"온실 작물 및 수분",
     cropDry:"수분 부족·중단", cropNoPw:"전력 부족·중단",
-    tUse:"사용", tJump:"점프", tEat:"먹기", tLamp:"램프"
+    tUse:"사용", tJump:"점프", tHop:"홉", tUp:"상승", tDown:"하강", tEat:"먹기", tLamp:"램프", tRet:"귀환",
+    dl:"PNG 다운로드",
+    tipLang:"언어", tipMode:"난이도 모드", tipLamp:"헤드램프 (L)", tipMute:"소리 (M)",
+    tipQual:"그래픽 품질", tipTouch:"터치 조작", tipPause:"일시정지 (Esc)", tipPhoto:"사진 모드 (P)"
   },
   zh:{
     title:"静谧月面基地", o2:"氧气", pw:"电力", wt:"水", hg:"饥饿",
@@ -461,7 +486,10 @@ const T = {
     taskLbl:"任务", taskShow:"显示", taskHide:"隐藏",
     invPot:"土豆", invIce:"冰样", invPart:"备用零件", invCrop:"温室作物与湿度",
     cropDry:"缺水暂停", cropNoPw:"电力不足暂停",
-    tUse:"互动", tJump:"跳跃", tEat:"吃土豆", tLamp:"头灯"
+    tUse:"互动", tJump:"跳跃", tHop:"跳步", tUp:"上升", tDown:"下降", tEat:"吃土豆", tLamp:"头灯", tRet:"返月",
+    dl:"下载 PNG",
+    tipLang:"语言", tipMode:"难度模式", tipLamp:"头灯 (L)", tipMute:"音效开关 (M)",
+    tipQual:"画质切换", tipTouch:"触屏按键", tipPause:"暂停 (Esc)", tipPhoto:"拍照模式 (P)"
   }
 };
 
@@ -679,8 +707,9 @@ const tg = new THREE.PlaneGeometry(600,600,300,300); tg.rotateX(-Math.PI/2);
   tg.setAttribute("color", new THREE.BufferAttribute(col, 3));
   tg.computeVertexNormals();
 }
+const moonWorld = new THREE.Group(); scene.add(moonWorld);
 const terrain = new THREE.Mesh(tg, new THREE.MeshStandardMaterial({ map:ground, bumpMap:ground, bumpScale:.7, vertexColors:true, roughness:1, metalness:0 }));
-terrain.receiveShadow = true; terrain.castShadow = true; scene.add(terrain);
+terrain.receiveShadow = true; terrain.castShadow = true; moonWorld.add(terrain);
 
 const mat = (c,o) => new THREE.MeshStandardMaterial(Object.assign({ color:c, roughness:.7 }, o || {}));
 function mesh(g,m,x,y,z,parent){
@@ -694,7 +723,7 @@ const gold = mat(0xc9a24a,{ metalness:.7, roughness:.45 });
 const solarMat = mat(0x14234b,{ metalness:.6, roughness:.3 });
 
 // Lander
-const lander = new THREE.Group(); lander.position.set(LAND.x, H(LAND.x, LAND.z), LAND.z); scene.add(lander);
+const lander = new THREE.Group(); lander.position.set(LAND.x, H(LAND.x, LAND.z), LAND.z); moonWorld.add(lander);
 mesh(new THREE.BoxGeometry(4,2.2,4), gold, 0, 3.3, 0, lander);
 mesh(new THREE.CylinderGeometry(.5,1.1,1.2,12), mat(0x555555,{metalness:.6}), 0, 1.7, 0, lander);
 [[1,1],[-1,1],[1,-1],[-1,-1]].forEach(a => {
@@ -709,7 +738,7 @@ mesh(new THREE.CylinderGeometry(.5,1.1,1.2,12), mat(0x555555,{metalness:.6}), 0,
 }
 
 // Greenhouse
-const gh = new THREE.Group(); gh.position.set(GH.x, H(GH.x, GH.z), GH.z); scene.add(gh);
+const gh = new THREE.Group(); gh.position.set(GH.x, H(GH.x, GH.z), GH.z); moonWorld.add(gh);
 mesh(new THREE.CylinderGeometry(7.4,7.6,.7,40), mat(0x9a9a98), 0, .3, 0, gh);
 const dome = new THREE.Mesh(
   new THREE.SphereGeometry(7,40,20,0,Math.PI*2,0,Math.PI/2),
@@ -747,15 +776,18 @@ const solarHeads = [];
 for(let r = 0; r < 3; r++){
   for(let c = 0; c < 4; c++){
     const x = SOL.x + c*3.6 - 5.4, z = SOL.z + r*6 - 6, y = H(x,z);
-    mesh(new THREE.CylinderGeometry(.09,.09,1.5,6), frameM, x, y + .75, z);
-    const head = new THREE.Group(); head.position.set(x, y + 1.5, z); scene.add(head);
+    mesh(new THREE.CylinderGeometry(.09,.09,1.5,6), frameM, x, y + .75, z, moonWorld);
+    const head = new THREE.Group(); head.position.set(x, y + 1.5, z); moonWorld.add(head);
     const p = mesh(new THREE.BoxGeometry(3.2,.08,2.2), rowM[r], 0, 0, 0, head); p.rotation.z = .95;
-    const f = mesh(new THREE.BoxGeometry(3.3,.05,2.3), frameM, 0, -.04, 0, head); f.rotation.z = .95;
+    mesh(new THREE.BoxGeometry(3.3,.05,2.3), frameM, 0, -.045, 0, p);
     solarHeads.push(head);
   }
 }
 
-// Rocks (clear 18m around spawn and 10m sightline corridor to greenhouse; store topY for 3D jump-over)
+// Scenic crater rim viewpoint facing Earth
+const CR_RIM = { x: CR.x - CR.r * .6, z: CR.z + CR.r * .8 };
+
+// Rocks (clear spawn, sightline corridor, and all base structures/landmarks; store topY for 3D jump-over)
 const ROCKS = [];
 {
   const n = 170;
@@ -771,8 +803,14 @@ const ROCKS = [];
     if(i < 45){ x = 75 + (r() - .5)*26; z = 10 + (r() - .5)*26; }
     else { x = (r() - .5)*260; z = (r() - .5)*260; }
     if(
-      Math.hypot(x - GH.x, z - GH.z) < 14 ||
+      Math.hypot(x - GH.x, z - GH.z) < 15 ||
       Math.hypot(x - LAND.x, z - LAND.z) < 8 ||
+      Math.hypot(x - SOL.x, z - SOL.z) < 15 ||
+      Math.hypot(x - ICE.x, z - ICE.z) < 11 ||
+      Math.hypot(x - COMMS.x, z - COMMS.z) < 10 ||
+      Math.hypot(x - RUIN.x, z - RUIN.z) < 13 ||
+      Math.hypot(x - PAD.x, z - PAD.z) < 13 ||
+      Math.hypot(x - CR_RIM.x, z - CR_RIM.z) < 5 ||
       Math.hypot(x - SPAWN.x, z - SPAWN.z) < 18 ||
       distToSightline(x, z) < 10
     ) continue;
@@ -786,32 +824,35 @@ const ROCKS = [];
     rk.setMatrixAt(k, o.matrix);
     const g = .45 + r()*.4; col.setRGB(g, g, g*.97); rk.setColorAt(k++, col);
   }
-  rk.count = k; rk.castShadow = rk.receiveShadow = true; rk.frustumCulled = false; scene.add(rk);
+  rk.count = k; rk.castShadow = rk.receiveShadow = true; rk.frustumCulled = false; moonWorld.add(rk);
 }
 
 // Helper for glowing landmark posts and tall beacons
 const post = (x,z,c) => {
   const y = H(x,z);
-  mesh(new THREE.CylinderGeometry(.08,.1,1.6,8), grey, x, y + .8, z);
-  mesh(new THREE.SphereGeometry(.22,12,10), new THREE.MeshStandardMaterial({ color:c, emissive:c, emissiveIntensity:1.2 }), x, y + 1.75, z);
+  mesh(new THREE.CylinderGeometry(.08,.1,1.6,8), grey, x, y + .8, z, moonWorld);
+  mesh(new THREE.SphereGeometry(.22,12,10), new THREE.MeshStandardMaterial({ color:c, emissive:c, emissiveIntensity:1.2 }), x, y + 1.75, z, moonWorld);
 };
 const bcn = (x,z,c,h) => {
   const y = H(x,z);
-  mesh(new THREE.CylinderGeometry(.1,.14,h,8), grey, x, y + h/2, z);
-  mesh(new THREE.SphereGeometry(.4,12,10), new THREE.MeshStandardMaterial({ color:c, emissive:c, emissiveIntensity:1.5 }), x, y + h + .2, z);
+  mesh(new THREE.CylinderGeometry(.1,.14,h,8), grey, x, y + h/2, z, moonWorld);
+  const bulbMat = new THREE.MeshStandardMaterial({ color:c, emissive:c, emissiveIntensity:1.5 });
+  mesh(new THREE.SphereGeometry(.4,12,10), bulbMat, x, y + h + .2, z, moonWorld);
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:radial([[0,'rgba(255,255,255,.55)'],[1,'rgba(255,255,255,0)']]), color:c, blending:THREE.AdditiveBlending, depthWrite:false, transparent:true }));
-  s.position.set(x, y + h + .2, z); s.scale.set(22,22,1); scene.add(s);
+  s.position.set(x, y + h + .2, z); s.scale.set(22,22,1); moonWorld.add(s);
+  return { bulbMat, sprite:s };
 };
 
-// Greenhouse & Solar posts (Solar beacon placed inside solar interaction zone)
+// Greenhouse, Solar & Crater Rim posts/beacons
 post(GH.x, GH.z - 10.5, 0x7bd88f);
 post(GH.x + 10.5, GH.z, 0x7fb8ff);
 post(GH.x - 6.6, GH.z + 8, 0xffffff);
 post(SOL.x - 2.5, SOL.z, 0xf2c14e);
-mesh(new THREE.CylinderGeometry(1,1,2.2,16), mat(0xbfc8d4,{metalness:.5}), GH.x + 12.8, H(GH.x + 12.8, GH.z) + 1.1, GH.z);
+mesh(new THREE.CylinderGeometry(1,1,2.2,16), mat(0xbfc8d4,{metalness:.5}), GH.x + 12.8, H(GH.x + 12.8, GH.z) + 1.1, GH.z, moonWorld);
+bcn(CR_RIM.x, CR_RIM.z, 0x8cc8ff, 5);
 
 // Ice Crater Drill Rig & Beacon
-const rig = new THREE.Group(); rig.position.set(ICE.x, H(ICE.x, ICE.z), ICE.z); scene.add(rig);
+const rig = new THREE.Group(); rig.position.set(ICE.x, H(ICE.x, ICE.z), ICE.z); moonWorld.add(rig);
 mesh(new THREE.BoxGeometry(3,.4,3), grey, 0, .2, 0, rig);
 mesh(new THREE.CylinderGeometry(.14,.14,5,8), grey, 0, 2.9, 0, rig);
 mesh(new THREE.BoxGeometry(1.6,.5,.5), dark, 0, 5.2, 0, rig);
@@ -830,20 +871,20 @@ mesh(new THREE.CylinderGeometry(.9,.9,2,16), mat(0xbfc8d4,{metalness:.5}), 2.2, 
   bcn(ICE.x + dx/dl*34, ICE.z + dz/dl*34, 0x9fd8ff, 8);
 }
 
-// Comms Station
+// Comms Station (dish tilts off-axis until aligned in Task 8)
+let commsDish, commsBcn;
 {
-  const g = new THREE.Group(); g.position.set(COMMS.x, H(COMMS.x, COMMS.z), COMMS.z); scene.add(g);
+  const g = new THREE.Group(); g.position.set(COMMS.x, H(COMMS.x, COMMS.z), COMMS.z); moonWorld.add(g);
   mesh(new THREE.BoxGeometry(4.5,2.6,4.5), wht, 0, 1.3, 0, g);
   mesh(new THREE.BoxGeometry(1.2,1.8,.1), dark, 0, 1.1, 2.28, g);
   mesh(new THREE.CylinderGeometry(.12,.16,7,8), grey, 3, 3.5, 0, g);
-  const d = mesh(new THREE.ConeGeometry(1.6,.8,28), wht, 3, 7.3, 0, g);
-  d.quaternion.setFromUnitVectors(UPV, earthDir.clone().negate());
+  commsDish = mesh(new THREE.ConeGeometry(1.6,.8,28), wht, 3, 7.3, 0, g);
 }
-bcn(COMMS.x - 3, COMMS.z + 4, 0x7bd88f, 6);
+commsBcn = bcn(COMMS.x - 3, COMMS.z + 4, 0xff9a3a, 6);
 
 // Ruined Base
 {
-  const g = new THREE.Group(); g.position.set(RUIN.x, H(RUIN.x, RUIN.z), RUIN.z); scene.add(g);
+  const g = new THREE.Group(); g.position.set(RUIN.x, H(RUIN.x, RUIN.z), RUIN.z); moonWorld.add(g);
   const rr = rng(8), old = mat(0x8f8f8d,{roughness:.9});
   const dm = mesh(new THREE.SphereGeometry(6,24,12,0,Math.PI*2,0,Math.PI/2), new THREE.MeshStandardMaterial({ color:0x8f8f8d, roughness:.9, side:THREE.DoubleSide }), 0, -.6, 0, g);
   dm.rotation.set(.22, 0, .18);
@@ -862,7 +903,7 @@ bcn(RUIN.x + 2, RUIN.z + 9, 0xff9a3a, 8);
 
 // Launch Pad
 {
-  const g = new THREE.Group(); g.position.set(PAD.x, H(PAD.x, PAD.z), PAD.z); scene.add(g);
+  const g = new THREE.Group(); g.position.set(PAD.x, H(PAD.x, PAD.z), PAD.z); moonWorld.add(g);
   mesh(new THREE.CylinderGeometry(8,8.4,.5,36), dark, 0, .25, 0, g);
   mesh(new THREE.CylinderGeometry(1.8,1.8,5.5,24), wht, 0, 3.3, 0, g);
   mesh(new THREE.ConeGeometry(1.8,2.2,24), gold, 0, 7.15, 0, g);
@@ -1176,20 +1217,23 @@ function suitInit(){
 function audioTick(now){
   if(!AC || !au.fan || paused || document.hidden) return;
   const t = AC.currentTime, spd = eva ? Ev.v.length() : Math.hypot(P.v.x, P.v.z);
-  if(t > au.next){ padNote(); au.next = t + 4 + Math.random()*6; }
-  au.hs.gain.setTargetAtTime(eva && spd > .3 ? Math.min(.1, spd*.03) : 0, t, .1);
-  au.fan.gain.setTargetAtTime(.0015 + Math.min(spd, 8)*.0006, t, .2);
-  if(o2 < 25 && t > au.warn){ au.warn = t + 3; beep(); }
-
-  const k = eva ? (ea && evT[ea.i].l) : (act && act.a.l);
-  const ex = Math.min(1, spd/8) + (eva ? .3 : 0) + (o2 < 30 ? .5 : 0) + (k ? .3 : 0);
-  if(t > au.nb2){ breath(Math.min(1, ex)); au.nb2 = t + Math.max(1.9, 4.4 - 2.4*Math.min(1, ex)) + Math.random()*.6; }
-  if(t > au.tk){ au.tk = t + 2 + Math.random()*4; clickSnd(t, .025); }
+  const k = (!frozen && !transitioning) ? (eva ? (ea && evT[ea.i].l) : (act && act.a.l)) : null;
+  au.hs.gain.setTargetAtTime(eva && !frozen && !transitioning && spd > .3 ? Math.min(.1, spd*.03) : 0, t, .1);
+  au.fan.gain.setTargetAtTime(.0015 + (frozen ? 0 : Math.min(spd, 8)*.0006), t, .2);
+  if(!muted){
+    if(t > au.next){ padNote(); au.next = t + 4 + Math.random()*6; }
+    if(!frozen && !transitioning && o2 < 25 && t > au.warn){ au.warn = t + 3; beep(); }
+    if(!frozen){
+      const ex = Math.min(1, spd/8) + (eva ? .3 : 0) + (o2 < 30 ? .5 : 0) + (k ? .3 : 0);
+      if(t > au.nb2){ breath(Math.min(1, ex)); au.nb2 = t + Math.max(1.9, 4.4 - 2.4*Math.min(1, ex)) + Math.random()*.6; }
+      if(t > au.tk){ au.tk = t + 2 + Math.random()*4; clickSnd(t, .025); }
+    }
+  }
   let o = 0, n = 0, f = 100, bf = 900;
   if(k){
     if(k === 'aDrill'){ o = .018; f = 118 + 8*Math.sin(now/55); n = .014; bf = 650; }
     else if(k === 'aClean'){ n = .022*(.5 + .5*Math.sin(now/95)); bf = 1900; }
-    else if(/Fix/.test(k)){ if(t > au.rt){ au.rt = t + .2; clickSnd(t, .05); } }
+    else if(/Fix/.test(k)){ if(!muted && t > au.rt){ au.rt = t + .2; clickSnd(t, .05); } }
     else if(k === 'aMelt' || k === 'aAir'){ o = .014; f = 92; }
     else { n = .01; bf = 800; }
   }
@@ -1222,12 +1266,38 @@ let crop = { st:0, m:0, t:0 };
 const pan = [{ dust:.1, broken:false }, { dust:.3, broken:false }, { dust:.15, broken:true }];
 let act = null, cur = null, frozen = false, hard = false, eW = false, fW = false, sv = 0, uiT = 0, edgeT = 0;
 let sunT = 0, transitioning = false, shakeT = 0;
-let faintTimer = 0, evaReturnTimer = 0, transTimer = 0;
+let faintLeft = 0, evaReturnLeft = 0, trans = null;
 
 function clearTimers(){
-  clearTimeout(faintTimer); faintTimer = 0;
-  clearTimeout(evaReturnTimer); evaReturnTimer = 0;
-  clearTimeout(transTimer); transTimer = 0;
+  faintLeft = 0;
+  evaReturnLeft = 0;
+  trans = null;
+  transitioning = false;
+  $("fade").classList.remove("on");
+}
+
+function stepTimers(dt){
+  if(trans){
+    trans.t += dt;
+    if(trans.phase === 0 && trans.t >= .85){
+      trans.phase = 1; trans.t = 0;
+      if(trans.target === 'eva') enterEVAImmediate();
+      else exitEVAImmediate();
+    }else if(trans.phase === 1 && trans.t >= .12){
+      $("fade").classList.remove("on");
+      transitioning = false;
+      trans = null;
+    }
+  }
+  if(faintLeft > 0){
+    faintLeft -= dt;
+    if(faintLeft <= 0){
+      faintLeft = 0;
+      P.p.set(GH.x - 9, 0, GH.z + 11); P.p.y = H(P.p.x, P.p.z); P.v.set(0,0,0); P.g = true;
+      hg = 40; o2 = 100; inv.ice = 0; wt = Math.max(0, wt - 10);
+      frozen = false; $("ov").className = "";
+    }
+  }
 }
 
 function mark(i){
@@ -1239,36 +1309,44 @@ function mark(i){
 }
 
 function eatPotato(){
+  if(paused || frozen || transitioning) return;
   if(inv.pot <= 0) return toast('noFood');
   if(inv.pot === 1 && crop.st === 0) return toast('keepSeed');
   inv.pot--; hg = cl(hg + 30); note('🥔 −1 · 🍽 +30'); sfx('ok');
 }
 
-const plant = () => { if(inv.pot < 1) return toast('noSeed'); inv.pot--; crop = { st:1, m:0, t:0 }; mark(0); note('🥔 −1 → 🌱'); };
+const chkSeed = () => inv.pot >= 1 || (toast('noSeed'), false);
+const chkWater = () => wt >= 10 || (toast('noWt'), false);
+const chkDrill = () => pw >= 4 || (toast('noPw'), false);
+const chkMelt = () => { if(inv.ice < 1){ toast('noIce'); return false; } if(pw < 5){ toast('noPw'); return false; } return true; };
+const chkAir = () => { if(wt < 8){ toast('noWt'); return false; } if(pw < 3){ toast('noPw'); return false; } return true; };
+const chkLaunch = () => ((inv.part | 0) >= 1 || !!inv.ev[0]) || (toast('noPart'), false);
+
+const plant = () => { inv.pot--; crop = { st:1, m:0, t:0 }; mark(0); note('🥔 −1 → 🌱'); };
 const emergencySeed = () => { inv.pot++; note('🥔 +1'); };
-const waterCrop = () => { if(wt < 10) return toast('noWt'); wt -= 10; crop.m = Math.min(100, crop.m + 60); note('💧 −10'); };
+const waterCrop = () => { wt -= 10; crop.m = Math.min(100, crop.m + 60); note('💧 −10'); };
 const harvest = () => { inv.pot += 4; crop = { st:0, m:0, t:0 }; mark(4); note('🥔 +4'); };
 const clean = i => { pan[i].dust = 0; mark(1); note('✨'); };
 const fix = i => { pan[i].broken = false; mark(5); note('🔧'); };
-const drill = () => { if(pw < 4) return toast('noPw'); pw -= 4; inv.ice += 2; mark(2); note('🧊 +2'); };
-const melt = () => { if(inv.ice < 1) return toast('noIce'); if(pw < 5) return toast('noPw'); inv.ice--; pw -= 5; wt = cl(wt + 25); mark(3); note('🧊 −1 → 💧 +25'); };
-const refill = () => { if(wt < 8) return toast('noWt'); if(pw < 3) return toast('noPw'); wt -= 8; pw -= 3; o2 = 100; note('🫧 100%'); };
-const align = () => { mark(7); toast('mc'); sfx('radio'); };
+const drill = () => { pw -= 4; inv.ice += 2; mark(2); note('🧊 +2'); };
+const melt = () => { inv.ice--; pw -= 5; wt = cl(wt + 25); mark(3); note('🧊 −1 → 💧 +25'); };
+const refill = () => { wt -= 8; pw -= 3; o2 = 100; note('🫧 100%'); };
+const align = () => { mark(7); applyCommsDish(); toast('mc'); sfx('radio'); save(); };
 const salvage = () => { inv.ruin = 1; inv.part = (inv.part | 0) + 1; inv.pot += 3; mark(8); toast('salv'); save(); };
-const launch = () => { if((inv.part | 0) < 1) return toast('noPart'); startLaunchTransition(); };
+const launch = () => { startLaunchTransition(); };
 
 const posts = [
   { x:GH.x, z:GH.z - 10.5, r:4.2, get:() => {
-    if(crop.st === 0) return inv.pot > 0 ? { l:'aPlant', t:2, run:plant } : { l:'aSeed', t:2, run:emergencySeed };
+    if(crop.st === 0) return inv.pot > 0 ? { l:'aPlant', t:2, check:chkSeed, run:plant } : { l:'aSeed', t:2, run:emergencySeed };
     if(crop.st === 4) return { l:'aHarv', t:3, run:harvest };
-    return crop.m < 90 ? { l:'aWater', t:2, run:waterCrop } : null;
+    return crop.m < 90 ? { l:'aWater', t:2, check:chkWater, run:waterCrop } : null;
   }},
-  { x:GH.x + 10.5, z:GH.z, r:4.2, get:() => ({ l:'aMelt', t:3, run:melt }) },
-  { x:GH.x - 6.6, z:GH.z + 8, r:4.2, get:() => ({ l:'aAir', t:2, run:refill }) },
-  { x:ICE.x, z:ICE.z, r:7, get:() => ({ l:'aDrill', t:4, run:drill }) },
+  { x:GH.x + 10.5, z:GH.z, r:4.2, get:() => ({ l:'aMelt', t:3, check:chkMelt, run:melt }) },
+  { x:GH.x - 6.6, z:GH.z + 8, r:4.2, get:() => ({ l:'aAir', t:2, check:chkAir, run:refill }) },
+  { x:ICE.x, z:ICE.z, r:7, get:() => ({ l:'aDrill', t:4, check:chkDrill, run:drill }) },
   { x:COMMS.x - 5, z:COMMS.z, r:4.5, get:() => done[7] ? null : { l:'aAlign', t:4, run:align } },
   { x:RUIN.x, z:RUIN.z, r:8, get:() => inv.ruin ? null : { l:'aSalvage', t:5, run:salvage } },
-  { x:PAD.x, z:PAD.z + 6, r:5, get:() => inv.st ? null : { l:'aLaunch', t:3, run:launch } }
+  { x:PAD.x, z:PAD.z + 6, r:5, get:() => ({ l:'aLaunch', t:3, check:chkLaunch, run:launch, silent:true }) }
 ];
 // Solar interaction posts with generous radius so beacon & panels trigger seamlessly
 [0,1,2].forEach(i => posts.push({
@@ -1286,8 +1364,9 @@ function load(){
     const s = JSON.parse(localStorage.getItem('qmb-save') || 'null');
     if(!s || typeof s !== 'object') return;
     const num = (v,def,lo,hi) => Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : def;
-    o2 = num(s.o2, 88, 30, 100);
-    hg = num(s.hg, 85, 20, 100);
+    hard = !!s.hard;
+    o2 = num(s.o2, 88, hard ? 5 : 30, 100);
+    hg = num(s.hg, 85, hard ? 5 : 20, 100);
     wt = num(s.wt, 60, 0, 100);
     pw = num(s.pw, 70, 0, 100);
     const si = (s.inv && typeof s.inv === 'object') ? s.inv : {};
@@ -1304,7 +1383,6 @@ function load(){
     };
     const sc2 = (s.crop && typeof s.crop === 'object') ? s.crop : {};
     crop = { st:Math.floor(num(sc2.st, 0, 0, 4)), m:num(sc2.m, 0, 0, 100), t:num(sc2.t, 0, 0, 25) };
-    hard = !!s.hard;
     if(Array.isArray(s.pan)){
       s.pan.slice(0,3).forEach((p,i) => {
         if(p && typeof p === 'object'){
@@ -1314,14 +1392,16 @@ function load(){
       });
     }
     if(Array.isArray(s.done)) s.done.slice(0, done.length).forEach((v,i) => done[i] = !!v);
-    P.p.x = num(s.x, SPAWN.x, -205, 205);
-    P.p.z = num(s.z, SPAWN.z, -205, 205);
+    let lx2 = num(s.x, SPAWN.x, -205, 205), lz2 = num(s.z, SPAWN.z, -205, 205);
+    const lr = Math.hypot(lx2, lz2);
+    if(lr > 205){ lx2 *= 205 / lr; lz2 *= 205 / lr; }
+    P.p.x = lx2; P.p.z = lz2;
     P.p.y = H(P.p.x, P.p.z);
   }catch(e){}
 }
 function reset(){
   clearTimers();
-  transitioning = false; $("fade").classList.remove("on");
+  if(photo) setPhoto(false);
   if(eva) exitEVAImmediate();
   o2 = 100; hg = 85; wt = 60; pw = 70;
   inv = { pot:2, ice:0, part:0, ruin:0, st:0, ev:[0,0,0], vGh:0, vSol:0, sun:0 };
@@ -1329,28 +1409,51 @@ function reset(){
   pan[0] = { dust:.1, broken:false }; pan[1] = { dust:.3, broken:false }; pan[2] = { dust:.15, broken:true };
   done.fill(false);
   P.p.set(SPAWN.x, 0, SPAWN.z); P.p.y = H(SPAWN.x, SPAWN.z); P.v.set(0,0,0); P.h = SPAWN.h;
+  P.g = true; P.ph = 0; P.dist = 0; P.side = 1;
   yaw = -.60; pitch = .12; zoom = 7.5;
-  frozen = false; act = null; ea = null; sunT = 0;
+  frozen = false; act = null; ea = null; eW = false; fW = false; sunT = 0;
+  fpI = 0; fps.count = 0; fps.instanceMatrix.needsUpdate = true;
+  dlife.fill(0); dpos.fill(-999); dg.attributes.position.needsUpdate = true;
+  glife.fill(0); gpos.fill(-999); gg.attributes.position.needsUpdate = true;
   $("ov").className = "";
+  $("toast").classList.remove("on");
+  $("prompt").textContent = ""; $("prog").className = "";
+  applyFix(); applyCommsDish(); updateSun(0); syncSceneVis();
   renderUI(); save();
 }
 function down(){
-  if(frozen) return;
+  if(frozen || transitioning) return;
   clearTimers();
+  if(photo) setPhoto(false);
   frozen = true; act = null; ea = null;
+  for(const k in keys) keys[k] = false;
   const o = $("ov"); o.className = "on";
   o.innerHTML = '<div>' + T[L][hard ? 'dead' : 'faint'] + '</div>' + (hard ? '<button id="rs" type="button">' + T[L].restart + '</button>' : '');
   if(hard) $("rs").onclick = reset;
-  else faintTimer = setTimeout(() => {
-    P.p.set(GH.x - 9, 0, GH.z + 11); P.p.y = H(P.p.x, P.p.z); P.v.set(0,0,0);
-    hg = 40; o2 = 100; inv.ice = 0; wt = Math.max(0, wt - 10);
-    frozen = false; o.className = "";
-  }, 3500);
+  else faintLeft = 3.5;
 }
 
 /* ============================================================================
    10. EVA TRANSITIONS & ORBITAL LOGIC
    ============================================================================ */
+function syncSceneVis(){
+  moonWorld.visible = !eva;
+  fps.visible = !eva;
+  dust.visible = !eva;
+  moon.visible = eva;
+  orb.visible = eva;
+  tl.visible = eva;
+  gas.visible = eva;
+  evM.forEach(m => { m.visible = eva; });
+}
+function applyCommsDish(){
+  const aligned = !!done[7];
+  commsDish.quaternion.setFromUnitVectors(UPV, aligned ? earthDir.clone().negate() : new THREE.Vector3(-.35, .85, .38).normalize());
+  const col = aligned ? 0x7bd88f : 0xff9a3a;
+  commsBcn.bulbMat.color.setHex(col);
+  commsBcn.bulbMat.emissive.setHex(col);
+  commsBcn.sprite.material.color.setHex(col);
+}
 function applyFix(){
   const e = inv.ev;
   wingBad.rotation.z = e[0] ? 0 : .4;
@@ -1363,31 +1466,25 @@ function applyFix(){
   });
 }
 function startLaunchTransition(){
-  if(transitioning) return;
+  if(transitioning || frozen) return;
   transitioning = true; act = null; shakeT = 1.4;
+  trans = { target:'eva', phase:0, t:0 };
   sfx('rocket');
   $("fade").classList.add("on");
-  transTimer = setTimeout(() => {
-    enterEVAImmediate();
-    transTimer = setTimeout(() => { $("fade").classList.remove("on"); transitioning = false; }, 120);
-  }, 850);
 }
 function startReturnTransition(){
-  if(transitioning || !eva) return;
-  clearTimeout(evaReturnTimer); evaReturnTimer = 0;
+  if(transitioning || !eva || frozen) return;
+  evaReturnLeft = 0;
   transitioning = true; ea = null; shakeT = 1.2;
+  trans = { target:'moon', phase:0, t:0 };
   sfx('rocket');
   $("fade").classList.add("on");
-  transTimer = setTimeout(() => {
-    exitEVAImmediate();
-    transTimer = setTimeout(() => { $("fade").classList.remove("on"); transitioning = false; }, 120);
-  }, 850);
 }
 function enterEVAImmediate(){
   inv.ev = inv.ev || [0,0,0];
-  eva = true; act = null; ea = null; mark(9);
+  eva = true; act = null; ea = null; evaReturnLeft = 0; mark(9);
   Ev.p.set(O.x + 2, O.y - 3, O.z + 14); Ev.v.set(0,0,0); o2 = 100;
-  sunDir.set(-.75, .45, .45).normalize(); placeSun(); applyFix();
+  sunDir.set(-.75, .45, .45).normalize(); placeSun(); applyFix(); syncSceneVis(); syncTouchLabels();
   $("hint").textContent = T[L].eva; $("pauseHint").textContent = T[L].eva;
   $("prompt").textContent = ""; $("prog").className = "";
   $("compass").classList.add("hidden");
@@ -1396,7 +1493,8 @@ function enterEVAImmediate(){
   armL.elbow.rotation.x = armR.elbow.rotation.x = -.4;
 }
 function exitEVAImmediate(){
-  eva = false; ea = null; updateSun(0);
+  eva = false; ea = null; evaReturnLeft = 0; updateSun(0); syncSceneVis(); syncTouchLabels();
+  pitch = Math.max(minPitch(), pitch);
   $("hint").textContent = T[L].hint; $("pauseHint").textContent = T[L].hint;
   $("prompt").textContent = ""; $("prog").className = "";
   $("compass").classList.remove("hidden");
@@ -1407,16 +1505,31 @@ function exitEVAImmediate(){
 /* ============================================================================
    11. UI BAR, QUALITY, COMPASS, PAUSE, PHOTO & TOUCH CONTROLS
    ============================================================================ */
-let Q = 0; try{ Q = +(localStorage.getItem('qmb-q') || 0); }catch(e){}
+let Q = 0; try{ const sq = +(localStorage.getItem('qmb-q') || 0); Q = (sq === 0 || sq === 1 || sq === 2) ? sq : 0; }catch(e){}
 let photo = false, shotReq = false, sure = false, usePointerLock = false, touchOn = false;
+try{ const s = JSON.parse(localStorage.getItem('qmb-set') || 'null'); if(s && typeof s.pl === 'boolean') usePointerLock = s.pl; }catch(e){}
 
+// Compact language dropdown (prevents top bar from overlapping center compass)
+const langWrap = document.createElement("div"); langWrap.className = "lang-wrap";
+const langBtn = document.createElement("button"); langBtn.type = "button"; langBtn.setAttribute("aria-haspopup", "true"); langBtn.setAttribute("aria-expanded", "false");
+const langMenu = document.createElement("div"); langMenu.id = "langMenu";
 const langBtns = [];
+function closeLangMenu(){ langMenu.classList.remove("on"); langBtn.setAttribute("aria-expanded", "false"); }
+langBtn.onclick = e => {
+  e.stopPropagation();
+  const open = !langMenu.classList.contains("on");
+  langMenu.classList.toggle("on", open);
+  langBtn.setAttribute("aria-expanded", String(open));
+};
 Object.keys(NAMES).forEach(k => {
   const b = document.createElement("button");
   b.type = "button"; b.textContent = NAMES[k]; b.dataset.l = k;
-  b.onclick = () => { L = k; try{ localStorage.setItem("qmb-lang", k); }catch(e){} renderUI(); };
-  $("langs").appendChild(b); langBtns.push(b);
+  b.onclick = () => { L = k; try{ localStorage.setItem("qmb-lang", k); }catch(e){} closeLangMenu(); renderUI(); };
+  langMenu.appendChild(b); langBtns.push(b);
 });
+langWrap.append(langBtn, langMenu);
+$("langs").appendChild(langWrap);
+addEventListener("pointerdown", e => { if(!langWrap.contains(e.target)) closeLangMenu(); });
 
 const mb = document.createElement("button"); mb.type = "button";
 mb.onclick = () => { hard = !hard; renderUI(); save(); };
@@ -1424,6 +1537,7 @@ $("langs").appendChild(mb);
 
 const lb = document.createElement("button"); lb.type = "button"; lb.textContent = "🔦";
 function toggleLamp(){
+  if(paused || frozen) return;
   lampOn = !lampOn;
   headlamp.intensity = lampOn ? 3.8 : 0;
   lampBulbMat.emissiveIntensity = lampOn ? 2.5 : 0;
@@ -1440,14 +1554,14 @@ muLbl(); $("langs").appendChild(mu);
 
 const qb = document.createElement("button"); qb.type = "button";
 function setQ(q){
-  Q = q;
-  renderer.setPixelRatio([Math.min(devicePixelRatio, 2), Math.min(devicePixelRatio, 1.5), 1][q]);
-  sun.castShadow = q < 2;
-  terrain.castShadow = (q === 0); // Disable terrain self-shadow on MD/SD for smooth FPS
-  const n = q ? 2048 : 4096; sun.shadow.mapSize.set(n, n);
+  Q = (q === 0 || q === 1 || q === 2) ? q : 0;
+  renderer.setPixelRatio([Math.min(devicePixelRatio, 2), Math.min(devicePixelRatio, 1.5), 1][Q]);
+  sun.castShadow = Q < 2;
+  terrain.castShadow = (Q === 0); // Disable terrain self-shadow on MD/SD for smooth FPS
+  const n = Q ? 2048 : 4096; sun.shadow.mapSize.set(n, n);
   if(sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map = null; }
-  resize(); qb.textContent = '⚙ ' + ['HD','MD','SD'][q];
-  try{ localStorage.setItem('qmb-q', q); }catch(e){}
+  resize(); qb.textContent = '⚙ ' + ['HD','MD','SD'][Q];
+  try{ localStorage.setItem('qmb-q', Q); }catch(e){}
 }
 qb.onclick = () => setQ((Q + 1) % 3);
 $("langs").appendChild(qb);
@@ -1457,12 +1571,20 @@ function setTouch(on){
   touchOn = on;
   $("touchUI").classList.toggle("on", on);
   tb.setAttribute("aria-pressed", String(on));
+  syncTouchLabels();
 }
 tb.onclick = () => setTouch(!touchOn);
 $("langs").appendChild(tb);
 
 const pb = document.createElement("button"); pb.type = "button"; pb.textContent = "⏸"; pb.onclick = () => setPause(true); $("langs").appendChild(pb);
-const phb = document.createElement("button"); phb.type = "button"; phb.textContent = "📷"; phb.onclick = () => setPhoto(true); $("langs").appendChild(phb);
+const phb = document.createElement("button"); phb.type = "button"; phb.textContent = "📷"; phb.onclick = () => { if(!frozen && !transitioning) setPhoto(true); }; $("langs").appendChild(phb);
+
+function syncTouchLabels(){
+  $("tJumpLbl").textContent = T[L][eva ? "tUp" : "tJump"];
+  $("tShiftLbl").textContent = T[L][eva ? "tDown" : "tHop"];
+  $("tShift").firstElementChild.textContent = eva ? "▼" : "⚡";
+  $("tRet").classList.toggle("hidden", !eva);
+}
 
 function renderUI(){
   document.documentElement.lang = L;
@@ -1475,8 +1597,14 @@ function renderUI(){
   if(eva){ $("hint").textContent = T[L].eva; $("pauseHint").textContent = T[L].eva; }
   $("tasks").innerHTML = T[L].tasks.map((t,i) => '<li class="' + (done[i] ? "ok" : "") + '">' + (done[i] ? "✓ " : "○ ") + t + "</li>").join("");
   syncTaskToggleUI();
+  syncTouchLabels();
+  langBtn.textContent = `🌐 ${NAMES[L]} ▾`;
   langBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === L)));
   mb.textContent = T[L][hard ? "hard" : "casual"];
+  const setTip = (el, k) => { el.title = T[L][k]; el.setAttribute("aria-label", T[L][k]); };
+  setTip(langBtn, "tipLang"); setTip(mb, "tipMode"); setTip(lb, "tipLamp");
+  setTip(mu, "tipMute"); setTip(qb, "tipQual"); setTip(tb, "tipTouch");
+  setTip(pb, "tipPause"); setTip(phb, "tipPhoto");
   updateHudBars();
 }
 
@@ -1497,26 +1625,28 @@ function updateHudBars(){
   $("invCrop").innerHTML = `<span class="inv-item" title="${T[L].invCrop}">🌱 ${crop.st}/4 (💧 ${Math.round(crop.m)}%)</span>${cropWarn}`;
 }
 
-// Compass Landmarks
+// Compass Landmarks & Right-Handed Cardinal Directions
 const COMPASS_MARKS = [
-  { x:GH.x, z:GH.z, col:'#ffb870' },
-  { x:SOL.x, z:SOL.z, col:'#f2c14e' },
-  { x:ICE.x, z:ICE.z, col:'#7fb8ff' },
-  { x:COMMS.x, z:COMMS.z, col:'#7bd88f' },
-  { x:RUIN.x, z:RUIN.z, col:'#ff9a3a' },
-  { x:PAD.x, z:PAD.z, col:'#ffffff' }
+  { x:GH.x, z:GH.z, col:'#ffb870', ico:'🌱' },
+  { x:SOL.x, z:SOL.z, col:'#f2c14e', ico:'☀' },
+  { x:CR_RIM.x, z:CR_RIM.z, col:'#8cc8ff', ico:'🌏' },
+  { x:ICE.x, z:ICE.z, col:'#7fb8ff', ico:'🧊' },
+  { x:COMMS.x, z:COMMS.z, col:'#7bd88f', ico:'📡' },
+  { x:RUIN.x, z:RUIN.z, col:'#ff9a3a', ico:'🏚' },
+  { x:PAD.x, z:PAD.z, col:'#ffffff', ico:'🚀' }
 ];
-const COMPASS_DIRS = [{ a:0, l:'N' }, { a:Math.PI/2, l:'E' }, { a:Math.PI, l:'S' }, { a:-Math.PI/2, l:'W' }];
+const COMPASS_DIRS = [
+  { dx:0, dz:-1, l:'N' }, { dx:1, dz:0, l:'E' }, { dx:0, dz:1, l:'S' }, { dx:-1, dz:0, l:'W' }
+];
 function updateCompass(){
   if(eva || photo) return;
   const track = $("compassTrack");
-  const lookAng = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
-  let html = "";
-  const wrap = a => Math.atan2(Math.sin(a), Math.cos(a));
+  const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
   const fov = Math.PI * .78;
+  let html = "";
   for(const d of COMPASS_DIRS){
-    const diff = wrap(d.a - lookAng);
-    if(Math.abs(diff) < fov*.55){
+    const diff = Math.atan2(d.dx * rx + d.dz * rz, d.dx * fx + d.dz * fz);
+    if(Math.abs(diff) < fov * .55){
       const pct = 50 + (diff / fov) * 100;
       html += `<span class="c-tick" style="left:${pct.toFixed(1)}%">${d.l}</span>`;
     }
@@ -1524,30 +1654,36 @@ function updateCompass(){
   for(const m of COMPASS_MARKS){
     const dx = m.x - P.p.x, dz = m.z - P.p.z, dist = Math.hypot(dx, dz);
     if(dist < 10) continue;
-    const ang = Math.atan2(dx, dz);
-    const diff = wrap(ang - lookAng);
-    if(Math.abs(diff) < fov*.52){
+    const diff = Math.atan2(dx * rx + dz * rz, dx * fx + dz * fz);
+    if(Math.abs(diff) < fov * .52){
       const pct = 50 + (diff / fov) * 100;
-      html += `<span class="c-mark" style="left:${pct.toFixed(1)}%"><i class="c-dot" style="background:${m.col};color:${m.col}"></i>${Math.round(dist)}m</span>`;
+      html += `<span class="c-mark" style="left:${pct.toFixed(1)}%"><span class="c-ico">${m.ico}</span><i class="c-dot" style="background:${m.col};color:${m.col}"></i>${Math.round(dist)}m</span>`;
     }
   }
   track.innerHTML = html;
 }
 
 // Pause & Settings
-const saveSet = () => { try{ localStorage.setItem('qmb-set', JSON.stringify({ vol, sens, music })); }catch(e){} };
-$("rv").value = vol; $("rsn").value = sens; $("rmu").value = music;
+const saveSet = () => { try{ localStorage.setItem('qmb-set', JSON.stringify({ vol, sens, music, pl:usePointerLock })); }catch(e){} };
+$("rv").value = vol; $("rsn").value = sens; $("rmu").value = music; $("rpl").checked = usePointerLock;
 $("rv").oninput = e => { vol = +e.target.value; applyVol(); saveSet(); };
 $("rmu").oninput = e => { music = +e.target.value; if(AC && au.mg) au.mg.gain.setTargetAtTime(music, AC.currentTime, .1); saveSet(); };
 $("rsn").oninput = e => { sens = +e.target.value; saveSet(); };
-$("rpl").onchange = e => { usePointerLock = e.target.checked; if(!usePointerLock && document.pointerLockElement) document.exitPointerLock(); };
+$("rpl").onchange = e => {
+  usePointerLock = e.target.checked;
+  if(!usePointerLock && document.pointerLockElement) document.exitPointerLock();
+  saveSet();
+};
 
 function setPause(p){
   paused = p;
+  closeLangMenu();
   $("pause").classList.toggle("on", p);
   sure = false; $("pX").textContent = T[L].pReset;
   if(p){
     for(const k in keys) keys[k] = false;
+    dragPid = -1; joyX = 0; joyY = 0;
+    $("joyKnob").style.transform = "translate(-50%,-50%)";
     if(document.pointerLockElement) document.exitPointerLock();
     if(AC && AC.state === 'running') AC.suspend().catch(() => {});
   }else{
@@ -1561,11 +1697,15 @@ $("pX").onclick = () => {
   reset(); setPause(false);
 };
 
-// Photo Mode
+// Photo Mode & Direct PNG Download
+const minPitch = () => eva ? -1.25 : (photo ? -.65 : -.55);
 function setPhoto(p){
   photo = p; $("app").classList.toggle("photo", p);
+  closeLangMenu();
   if(p && document.pointerLockElement) document.exitPointerLock();
+  if(!p){ zoom = Math.min(16, zoom); pitch = Math.max(minPitch(), pitch); }
 }
+function closeShot(){ $("shot").classList.remove("on"); setPause(false); }
 function grab(){
   $("shotImg").src = canvas.toDataURL('image/png');
   $("shot").classList.add("on");
@@ -1573,13 +1713,19 @@ function grab(){
 }
 $("phoCap").onclick = () => { if(photo && !paused) shotReq = true; };
 $("phoExit").onclick = () => setPhoto(false);
-$("shotX").onclick = () => { $("shot").classList.remove("on"); setPause(false); };
+$("shotDl").onclick = () => {
+  const a = document.createElement("a");
+  a.href = $("shotImg").src;
+  a.download = "quiet-moon-base.png";
+  a.click();
+};
+$("shotX").onclick = closeShot;
 const _rr = renderer.render.bind(renderer);
 renderer.render = function(s,c){ _rr(s,c); if(shotReq){ shotReq = false; grab(); } };
 
-// Inputs & Pointer Lock
+// Inputs, Pointer Lock & Multi-Touch Safe Drag
 const keys = {}, alias = { ArrowUp:"KeyW", ArrowDown:"KeyS", ArrowLeft:"KeyA", ArrowRight:"KeyD" };
-let yaw = -.60, pitch = .12, zoom = 7.5, drag = false, lx = 0, ly = 0;
+let yaw = -.60, pitch = .12, zoom = 7.5, dragPid = -1, lx = 0, ly = 0;
 let joyX = 0, joyY = 0;
 
 addEventListener("keydown", e => {
@@ -1587,32 +1733,44 @@ addEventListener("keydown", e => {
   keys[k] = true;
   if(e.code === "Space" || alias[e.code]) e.preventDefault();
   if(e.code === "KeyM") mu.onclick();
-  else if(e.code === "KeyL" && !paused) toggleLamp();
-  else if(e.code === "Escape"){ if(!$("shot").classList.contains("on")) setPause(!paused); }
-  else if(e.code === "KeyP" && !paused) setPhoto(!photo);
-  else if(e.code === "Enter" && photo && !paused) shotReq = true;
+  else if(e.code === "KeyL" && !paused && !frozen) toggleLamp();
+  else if(e.code === "Escape"){
+    if(langMenu.classList.contains("on")) closeLangMenu();
+    else if($("shot").classList.contains("on")) closeShot();
+    else setPause(!paused);
+  }
+  else if(e.code === "KeyP" && !paused && !frozen && !transitioning) setPhoto(!photo);
+  else if(e.code === "Enter" && photo && !paused && !frozen) shotReq = true;
 });
 addEventListener("keyup", e => { keys[alias[e.code] || e.code] = false; });
+addEventListener("blur", () => {
+  for(const k in keys) keys[k] = false;
+  dragPid = -1; joyX = 0; joyY = 0;
+  $("joyKnob").style.transform = "translate(-50%,-50%)";
+});
 
 canvas.addEventListener("pointerdown", e => {
+  closeLangMenu();
   if(usePointerLock && !paused && e.pointerType === "mouse"){
     if(document.pointerLockElement !== canvas) canvas.requestPointerLock();
     return;
   }
-  drag = true; lx = e.clientX; ly = e.clientY;
+  if(dragPid !== -1) return;
+  dragPid = e.pointerId; lx = e.clientX; ly = e.clientY;
   try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
 });
-canvas.addEventListener("pointerup", () => { drag = false; });
-canvas.addEventListener("pointercancel", () => { drag = false; });
+const endDrag = e => { if(e.pointerId === dragPid) dragPid = -1; };
+canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointercancel", endDrag);
 addEventListener("pointermove", e => {
   if(document.pointerLockElement === canvas){
     yaw -= e.movementX * .0035 * sens;
-    pitch = Math.max(photo ? -.45 : -.15, Math.min(1.25, pitch + e.movementY * .0035 * sens));
+    pitch = Math.max(minPitch(), Math.min(1.25, pitch + e.movementY * .0035 * sens));
     return;
   }
-  if(!drag) return;
+  if(e.pointerId !== dragPid) return;
   yaw += (e.clientX - lx) * .005 * sens;
-  pitch = Math.max(photo ? -.45 : -.15, Math.min(1.25, pitch + (e.clientY - ly) * .005 * sens));
+  pitch = Math.max(minPitch(), Math.min(1.25, pitch + (e.clientY - ly) * .005 * sens));
   lx = e.clientX; ly = e.clientY;
 });
 canvas.addEventListener("wheel", e => {
@@ -1651,8 +1809,10 @@ canvas.addEventListener("wheel", e => {
   };
   bindHold("tAct", "KeyE");
   bindHold("tJump", "Space");
+  bindHold("tShift", "ShiftLeft");
   $("tEat").addEventListener("pointerdown", e => { e.stopPropagation(); eatPotato(); });
   $("tLamp").addEventListener("pointerdown", e => { e.stopPropagation(); toggleLamp(); });
+  $("tRet").addEventListener("pointerdown", e => { e.stopPropagation(); if(eva && !paused && !frozen && !transitioning) startReturnTransition(); });
 
   if('ontouchstart' in window && innerWidth < 900) setTouch(true);
 }
@@ -1672,6 +1832,7 @@ const COL = [
   [GH.x, GH.z - 10.5, .4], [GH.x + 10.5, GH.z, .4], [GH.x - 6.6, GH.z + 8, .4],
   [SOL.x - 2.5, SOL.z, .4], [COMMS.x - 3, COMMS.z + 4, .4], [COMMS.x + 3, COMMS.z, .4],
   [RUIN.x + 2, RUIN.z + 9, .4], [PAD.x + 8, PAD.z + 8, .4], [PAD.x + 4.5, PAD.z, 1.8],
+  [CR_RIM.x, CR_RIM.z, .4],
   [RUIN.x + 5, RUIN.z + 4, 2.4], [RUIN.x - 6, RUIN.z - 4, 2.4], [RUIN.x + 3, RUIN.z - 7, 2.4], [RUIN.x + 8, RUIN.z - 1, 1.6]
 ];
 for(let r = 0; r < 3; r++) for(let c = 0; c < 4; c++) COL.push([SOL.x + c*3.6 - 5.4, SOL.z + r*6 - 6, 1.7]);
@@ -1706,16 +1867,18 @@ function updateSun(dt){
   sunDir.set(Math.cos(a)*Math.cos(el), Math.sin(el), Math.sin(a)*Math.cos(el));
   placeSun();
   inv.sun = sunT;
-  // Gently track sun azimuth on solar panels
-  const sunYaw = Math.atan2(-sunDir.z, sunDir.x);
+  // Face solar panel cells directly toward the sun's horizontal azimuth
+  const sunYaw = Math.atan2(sunDir.z, -sunDir.x);
   for(const h of solarHeads) h.rotation.y = sunYaw;
 }
 
 function gameTick(dt, now){
   if(frozen){ for(const q in keys) keys[q] = false; return; }
   const spd = Math.hypot(P.v.x, P.v.z);
-  hg = Math.max(0, hg - (.1 + Math.min(spd, 8)*.02)*dt);
-  o2 = Math.max(0, o2 - .35*dt);
+  if(!transitioning){
+    hg = Math.max(0, hg - (.1 + Math.min(spd, 8)*.02)*dt);
+    o2 = Math.max(0, o2 - .35*dt);
+  }
 
   let gen = 0;
   pan.forEach((p,i) => {
@@ -1741,12 +1904,17 @@ function gameTick(dt, now){
     const d = Math.hypot(P.p.x - q.x, P.p.z - q.z);
     if(d < q.r && d < best){ const a = q.get(); if(a){ best = d; cur = { q, a }; } }
   }
-  if(act && (!cur || cur.q !== act.q)) act = null;
-  if(keys.KeyE && !eW && cur && !act && !transitioning) act = { q:cur.q, a:cur.a, t:0 };
+  if(act && (!cur || cur.q !== act.q || cur.a.l !== act.a.l)) act = null;
+  if(keys.KeyE && !eW && cur && !act && !transitioning){
+    if(!cur.a.check || cur.a.check()) act = { q:cur.q, a:cur.a, t:0 };
+  }
   eW = !!keys.KeyE;
   if(act){
     act.t += dt;
-    if(act.t >= act.a.t){ const f = act.a.run; act = null; f(); sfx('ok'); }
+    if(act.t >= act.a.t){
+      const a = act.a; act = null;
+      if(!a.check || a.check()){ a.run(); if(!a.silent) sfx('ok'); }
+    }
   }
   if(keys.KeyF && !fW) eatPotato();
   fW = !!keys.KeyF;
@@ -1764,20 +1932,24 @@ function gameTick(dt, now){
   // Atmospheric first-arrival narrative toasts
   if(!inv.vGh && Math.hypot(P.p.x - GH.x, P.p.z - GH.z) < 15){ inv.vGh = 1; toast('gh'); }
   if(!inv.vSol && Math.hypot(P.p.x - SOL.x, P.p.z - SOL.z) < 15){ inv.vSol = 1; toast('sol'); }
-  if(Math.hypot(P.p.x - CR.x, P.p.z - CR.z) < CR.r + 8 && !done[6]){ mark(6); toast('cr'); }
+  if(!done[6] && Math.hypot(P.p.x - CR.x, P.p.z - CR.z) < CR.r + 10){
+    const cp = Math.cos(pitch);
+    const lookDot = (-Math.sin(yaw)*cp)*earthDir.x + (-Math.sin(pitch))*earthDir.y + (-Math.cos(yaw)*cp)*earthDir.z;
+    if(lookDot > .35){ mark(6); toast('cr'); }
+  }
 
   uiT += dt;
   if(uiT > .22){ uiT = 0; updateHudBars(); updateCompass(); }
   sv += dt; if(sv > 5){ sv = 0; save(); }
-  if(hg <= 0 || o2 <= 0) down();
+  if(!transitioning && (hg <= 0 || o2 <= 0)) down();
 }
 
 function evaFrame(dt, now){
   const cp = Math.cos(pitch), fx = -Math.sin(yaw)*cp, fy = -Math.sin(pitch), fz = -Math.cos(yaw)*cp;
   const rx = Math.cos(yaw), rz = -Math.sin(yaw);
-  const iz = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) + joyY;
-  const ix = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + joyX;
-  const iy = (keys.Space ? 1 : 0) - ((keys.ShiftLeft || keys.ShiftRight) ? 1 : 0);
+  const iz = transitioning ? 0 : ((keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) + joyY);
+  const ix = transitioning ? 0 : ((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + joyX);
+  const iy = transitioning ? 0 : ((keys.Space ? 1 : 0) - ((keys.ShiftLeft || keys.ShiftRight) ? 1 : 0));
 
   const tx = fx*iz + rx*ix, ty = fy*iz + iy, tz = fz*iz + rz*ix;
   Ev.v.x += tx*3*dt; Ev.v.y += ty*3*dt; Ev.v.z += tz*3*dt;
@@ -1830,8 +2002,15 @@ function evaFrame(dt, now){
   }
   beacon.material.emissiveIntensity = .4 + .9*Math.max(0, Math.sin(now*.004));
 
-  o2 = Math.max(0, o2 - .5*dt);
-  hg = Math.max(0, hg - .1*dt);
+  const safePhase = transitioning || evaReturnLeft > 0;
+  if(!safePhase){
+    o2 = Math.max(0, o2 - .5*dt);
+    hg = Math.max(0, hg - .1*dt);
+  }
+  if(evaReturnLeft > 0){
+    evaReturnLeft -= dt;
+    if(evaReturnLeft <= 0){ evaReturnLeft = 0; startReturnTransition(); }
+  }
   if(keys.KeyF && !fW) eatPotato();
   fW = !!keys.KeyF;
 
@@ -1851,7 +2030,7 @@ function evaFrame(dt, now){
       applyFix(); note('🔧'); save();
       if(inv.ev.every(Boolean)){
         inv.st = 1; mark(10); toast('evaDone');
-        evaReturnTimer = setTimeout(startReturnTransition, 3600);
+        evaReturnLeft = 3.6;
       }
     }
   }
@@ -1873,11 +2052,15 @@ function evaFrame(dt, now){
 
   uiT += dt; if(uiT > .22){ uiT = 0; updateHudBars(); }
   if(keys.KeyR && eva && !transitioning) startReturnTransition();
-  else if(o2 <= 0 || hg <= 0){ exitEVAImmediate(); down(); }
+  else if(!safePhase && (o2 <= 0 || hg <= 0)){ exitEVAImmediate(); down(); }
 }
 
 load();
 sunT = inv.sun || 0;
+applyFix();
+applyCommsDish();
+updateSun(0);
+syncSceneVis();
 setQ(Q);
 renderUI();
 
@@ -1885,12 +2068,13 @@ let last = performance.now();
 function frame(now){
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   if(paused){ renderer.render(scene, camera); requestAnimationFrame(frame); return; }
+  stepTimers(dt);
   audioTick(now);
   updateSun(dt);
   if(eva){ evaFrame(dt, now); renderer.render(scene, camera); requestAnimationFrame(frame); return; }
 
-  const iz = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) + joyY;
-  const ix = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + joyX;
+  const iz = (frozen || transitioning) ? 0 : ((keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) + joyY);
+  const ix = (frozen || transitioning) ? 0 : ((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + joyX);
   const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
   let mx = fx*iz + rx*ix, mz = fz*iz + rz*ix;
   const ml = Math.hypot(mx, mz); if(ml > 1){ mx /= ml; mz /= ml; }
